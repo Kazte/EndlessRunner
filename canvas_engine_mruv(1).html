@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+	html, body {
+	  width:  100%;
+	  height: 100%;
+	  margin: 0;
+	  overflow: hidden;
+	}
+</style>
+<script type="text/javascript" src="math.js"></script>
+<script type="text/javascript" src="canvas_engine.js"></script>
+<script type="text/javascript">
+var canvas;
+var ctx;
+var time = 0;
+//=========================================================================================== Tu código aqui
+
+var KEY_ARROW_DOWN = 40
+var KEY_ARROW_UP = 38
+var KEY_ARROW_LEFT = 37
+var KEY_ARROW_RIGHT = 39
+var KEY_SPACE = 32
+
+var init = true
+var xscale = 80
+
+var ball;
+
+function Start()
+{
+    DrawRectangle(0, 0, screenWidth, screenHeight, 255, 255, 255, 1)
+
+    SetFont("40px Arial")
+    ball = {
+        x: 0,
+        v: 0,
+        a: 400
+    }
+    init = true
+}
+
+function Update()
+{
+    MRUV()
+    //Magia()
+
+    if (time > 3) {
+        Start()
+        time = 0
+
+    }
+}
+
+function Render()
+{
+    DrawGraph(50, 30, time * xscale, ball.x*0.2, 't', 'x', 0, 0, 255, init)
+    DrawGraph(350, 30, time * xscale, ball.v*0.3, 't', 'v', 255, 0, 0, init)
+    DrawGraph(650, 30, time * xscale, ball.a*0.3, 't', 'a', 0, 150, 0, init)
+
+    DrawRectangle(0, 600, screenWidth, screenHeight - 600, 20, 20, 20, init?1:0.2)
+
+    DrawCircle(ball.x + 30, 800, 12, 255, 255, 255, 1)
+    DrawCircle(ball.x+30, 800, 10, 0, 0, 255, 1)
+
+    init = false
+}
+
+function DrawGraph(xpos, ypos, x, y, xcordname, ycordname, r, g, b, graph) {
+    var graphW = 200
+    var graphH = 250
+    SetFont("30px Arial")
+    //x = x%graphW
+    if (graph) {
+        DrawLine(xpos, ypos, xpos, ypos + graphH, 2, 0, 0, 0, 0.3)
+        DrawLine(xpos, ypos + graphH, xpos + graphW, ypos + graphH, 2, 0, 0, 0, 0.3)
+        SetTextAlign("center")
+        DrawText(xcordname, xpos + graphW, ypos + graphH + 35, 0, 0, 0, 1)
+        SetTextAlign("right")
+        DrawText(ycordname, xpos - 8, ypos+15, r, g, b, 1)
+    }
+    if (x < graphW) {
+        //DrawRectangle(xpos + x + 2, ypos, xscale, ypos + graphH * 2, 255, 255, 255, 0.1)
+        //DrawRectangle(xpos + x + 2, ypos + graphH - 1, xscale/30, 2, 0, 0, 0, 1)
+        DrawCircle(xpos + x + 3, ypos + graphH - y, 1, r, g, b, 1)
+    }
+}
+
+function MRUV() {
+    ball.v = ball.v + ball.a * elapsed_time
+    ball.x = ball.x + ball.v * elapsed_time + ball.a * 0.5 * elapsed_time * elapsed_time
+}
+
+function Magia() {
+    var acc = 0
+    if (IsKeyPressed(KEY_ARROW_RIGHT)) { acc = acc + 500 }
+    if (IsKeyPressed(KEY_ARROW_LEFT)) { acc = acc - 500 }
+    ball.a = acc
+    ball.v = ball.v + ball.a * elapsed_time
+    ball.x = ball.x + ball.v * elapsed_time + ball.a * 0.5 * elapsed_time * elapsed_time
+
+}
+
+//===========================================================================================
+</script>
+</head>
+<body onload="Initialize();">
+	<canvas id="mycanvas" width="1200" height="800"></canvas>
+</body>
+</html>
+ 
