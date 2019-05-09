@@ -22,7 +22,7 @@ var isLeftPressed = false
 
 var imgPlayer = new Image()
 var imgGameOver = new Image()
-
+var imgPixel = new Image()
 
 
 
@@ -61,6 +61,17 @@ function Player(_x, _y, _m){
             }
 
 
+            if (IsKeyPressed(KEY_ARROW_DOWN)){
+                crouch = true
+            }else{
+                crouch = false
+            }
+
+            if (crouch){
+                this.h = 16
+            }else{
+                this.h = 32
+            }
 
             // Acc
             this.ay += this.g 
@@ -76,14 +87,14 @@ function Player(_x, _y, _m){
             // Collision
             this.collision()
 
-            if (this.y + 32 > suelo.y){
-                this.y = (suelo.y - 32)
+            
+
+            if (this.y + this.h > suelo.y){
+                this.y = (suelo.y - this.h)
                 this.vy = 0
                 this.ay = 0
                 this.ground = true
             }
-
-                console.log("ay: " + this.ay)
         },
 
         jump:function(){
@@ -100,7 +111,18 @@ function Player(_x, _y, _m){
         },
 
         draw: function(){
-            DrawImage(imgPlayer, this.x, this.y, 16, 32, 0, 0, this.angle)
+            DrawImage(imgPlayer, this.x, this.y, this.w, this.h, 0, 0, this.angle)
+            for (var i = this.x; i < this.x + this.w; i++){
+                DrawImageSimple(imgPixel, i, this.y, 1, 1)
+                DrawImageSimple(imgPixel, i, this.y + this.h, 1, 1)
+            }
+
+
+            for (var i = this.y; i < this.y + this.h; i++){
+                DrawImageSimple(imgPixel, this.x, i, 1, 1)
+                DrawImageSimple(imgPixel, this.x + this.w, i, 1, 1)
+            }
+
         },
 
         collision:function(){
@@ -132,7 +154,12 @@ function Generador(){
         y: screenHeight/2,
 
         generateCube: function(){
-            cubosLista.push(new Cubo(this.x, this.y))
+            var rand = Math.random()
+            if (rand > 0.5){
+                cubosLista.push(new Cubo(this.x, this.y, 16, 16))
+            }else{
+                cubosLista.push(new Cubo(this.x, this.y, 16, 32))
+            }
         },
 
         update: function(){
@@ -146,19 +173,28 @@ function Generador(){
     return generador
 }
 
-function Cubo(_x, _y){
+function Cubo(_x, _y, _w, _h){
     var cubo = {
         x: _x,
         y: _y,
-        w: 16,
-        h: 32,
+        w: _w,
+        h: _h,
         scale: 1,
         vx: 0,
         vy: 0,
-        speed: -200,
+        ax: 0,
+        ay: 0,
+        acc: -.2,
 
         update: function(){
-            this.x += this.speed * elapsed_time;
+            // Acc
+            this.ax += this.acc
+
+            // Velocity
+            this.vx = -120
+
+            // Position
+            this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
         },
 
         draw: function(){
@@ -214,6 +250,7 @@ function Start()
 
     imgPlayer.src = "img/player.jpg"
     imgGameOver.src = "img/gameover.png"
+    imgPixel.src = "img/pixel.png"
 
 }
 
