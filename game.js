@@ -11,10 +11,10 @@ var KEY_SPACE			= 32
 var pause = false
 var isGameOver = false
 
-// var fileScore = new File
 
-var highScore = 100000
-var score = 1000000
+
+var highScore = 0
+var score = 0
 
 var isSpacePressed = false
 var isRightPressed = false
@@ -124,8 +124,6 @@ function Player(_x, _y, _m){
     }
     return player 
 }
-
-console.log(screenWidth, screenHeight)
 
 function Generador(){
 
