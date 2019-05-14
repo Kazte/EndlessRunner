@@ -11,7 +11,7 @@ var KEY_SPACE			= 32
 var pause = false
 var isGameOver = false
 
-
+var time = 0;
 
 var highScore = 0
 var score = 0
@@ -24,6 +24,8 @@ var imgPlayer = new Image()
 var imgGameOver = new Image()
 var imgPixel = new Image()
 
+// Dificultad del juego
+var speed = -150
 
 
 function Player(_x, _y, _m){
@@ -112,6 +114,8 @@ function Player(_x, _y, _m){
 
         draw: function(){
             DrawImage(imgPlayer, this.x, this.y, this.w, this.h, 0, 0, this.angle)
+            
+            /* DRAW COLLISION
             for (var i = this.x; i < this.x + this.w; i++){
                 DrawImageSimple(imgPixel, i, this.y, 1, 1)
                 DrawImageSimple(imgPixel, i, this.y + this.h, 1, 1)
@@ -122,7 +126,7 @@ function Player(_x, _y, _m){
                 DrawImageSimple(imgPixel, this.x, i, 1, 1)
                 DrawImageSimple(imgPixel, this.x + this.w, i, 1, 1)
             }
-
+            */
         },
 
         collision:function(){
@@ -152,28 +156,32 @@ function Generador(){
     var generador = {
         x: screenWidth,
         y: screenHeight/2,
+        canSpawn: false,
+        minTime: 2,
+        maxTime: 5,
 
         generateCube: function(){
             var rand = Math.random()
             if (rand > 0.5){
-                cubosLista.push(new Cubo(this.x, this.y, 16, 16))
+                cubosLista.push(new Cubo(this.x, this.y, 16, 16, speed))
             }else{
-                cubosLista.push(new Cubo(this.x, this.y, 16, 32))
+                cubosLista.push(new Cubo(this.x, this.y, 16, 32, speed))
             }
+
+            setTimeout(() => {
+                this.generateCube()
+            }, Random(this.minTime, this.maxTime) * 1000);
+
         },
 
         update: function(){
-            var rand = Math.random()
-            if (rand > 0.995){
-                this.generateCube()
-            }
         },
     }
 
     return generador
 }
 
-function Cubo(_x, _y, _w, _h){
+function Cubo(_x, _y, _w, _h, _speed){
     var cubo = {
         x: _x,
         y: _y,
@@ -184,14 +192,15 @@ function Cubo(_x, _y, _w, _h){
         vy: 0,
         ax: 0,
         ay: 0,
-        acc: -.2,
+        acc: 0,
+        speed: _speed,
 
         update: function(){
             // Acc
             this.ax += this.acc
 
             // Velocity
-            this.vx = -120
+            this.vx = this.ax * elapsed_time + this.speed
 
             // Position
             this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
@@ -252,6 +261,8 @@ function Start()
     imgGameOver.src = "img/gameover.png"
     imgPixel.src = "img/pixel.png"
 
+    generador.generateCube()
+
 }
 
 function Update()
@@ -262,10 +273,12 @@ function Update()
         cubosLista.forEach(cubo => {
         if (cubo.x + 32 < 0){
             cubosLista.shift()
-            score += 1
+            score += 10 + time * .5
         }
         cubo.update()
         });
+
+        difficultyControl()
     }
 
     gameOver.update()
@@ -276,6 +289,9 @@ function Update()
             location.reload()
         }
     }
+
+
+    
 
     // Highscore and score
 
@@ -299,14 +315,24 @@ function Render()
     // Score and Highscore
     SetFont("35px Arial")
     SetTextAlign("left")
-    DrawText("Score: " + score, 10, 40, 0, 0, 0, 1)
+    DrawText("Score: " + Math.ceil(score), 10, 40, 0, 0, 0, 1)
 
     SetFont("35px Arial")
     SetTextAlign("center")
-    DrawText("HighScore: " + highScore, 500, 40, 0, 0, 0, 1)
+    DrawText("HighScore: " + Math.ceil(highScore), 500, 40, 0, 0, 0, 1)
 
 
     if (isGameOver){
-    gameOver.draw()
+        gameOver.draw()
+    }
+}
+
+function difficultyControl(){
+    speed -= elapsed_time * 1.5
+    score += elapsed_time * 1.2
+
+
+    if (score > 500){
+
     }
 }
