@@ -208,6 +208,9 @@ function DrawImageSimple(image, x, y, w, h)
  */
 function DrawText(text, x, y, r, g, b, a) {
     if (ctxset) {
+        ctx.strokeStyle = 'rgba(' + (255-r) + ',' + (255-g) + ',' + (255-b) + ',' + a + ')';
+        ctx.strokeText(text, x, y);
+        ctx.lineWidth = 3;
         ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
         ctx.fillText(text, x, y);
     }

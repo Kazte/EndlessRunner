@@ -1,5 +1,8 @@
 
-var cubosLista = []
+var listCubes = []
+
+var listFloor = []
+var listBG = []
 
 var KEY_R = 82
 var KEY_ARROW_DOWN		= 40
@@ -23,6 +26,8 @@ var isLeftPressed = false
 var imgPlayer = new Image()
 var imgGameOver = new Image()
 var imgPixel = new Image()
+var imgBG = new Image()
+var imgFloor = new Image()
 
 // Dificultad del juego
 var speed = -150
@@ -32,21 +37,21 @@ var speed = -150
 function Player(_x, _y, _m){
 
     var player = {
-        x: _x,  // posicion x                          
-        y: _y,  // posicion y
-        w: 16,  // anchura
-        h: 32,  // altura
-        m: 9,   // masa
-        vx: 0,  // velocidad x
-        vy: 0,  // velocidad y
-        ax: 0,  // aceleracion x
-        ay: 0,  // aceleracion y
-        speed: 150, //
-        angle: 0,   // angulo de imagen
-        jumpForce: -200000, // fuerza de salto
-        g: 980, // gravedad
-        ground : false, // esta en el suelo?
-        crouch: false,  // esta agachado?
+        x: _x,                 
+        y: _y,
+        w: 16,
+        h: 32,
+        m: 9, 
+        vx: 0,
+        vy: 0,
+        ax: 0,
+        ay: 0,
+        speed: 150, 
+        angle: 0,   
+        jumpForce: -200000, 
+        g: 980, 
+        ground : false, 
+        crouch: false,  
 
 
         // funcion actualizar
@@ -81,36 +86,27 @@ function Player(_x, _y, _m){
 
             // MRUV
             // Acc
-            // ecuacion de aceleracion
             this.ay += this.g 
 
             // Velocity
-            // ecuacion de velocidad
-            this.vx += this.ax * elapsed_time
             this.vy += this.ay * elapsed_time
 
             // Position
-            // ecuacion de posicion
-            this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
             this.y += this.vy * elapsed_time + 1/2 * this.ay * (elapsed_time * elapsed_time)
 
             // Collision
-            this.collision()
-
+            this.collisionCubos()
             
-
-            if (this.y + this.h > suelo.y){
-                this.y = (suelo.y - this.h)
-                this.vy = 0
-                this.ay = 0
-                this.ground = true
-            }
+            // Collision floor
+            this.collisionFloor()
         },
+
+        
 
         jump:function(){
             if (this.ground){
-            this.ay += this.jumpForce / this.m
-            this.ground = false
+                this.ay += this.jumpForce / this.m
+                this.ground = false
             }
         },
 
@@ -123,30 +119,38 @@ function Player(_x, _y, _m){
         draw: function(){
             DrawImage(imgPlayer, this.x, this.y, this.w, this.h, 0, 0, this.angle)
             
-            /* DRAW COLLISION
+            // Outline
             for (var i = this.x; i < this.x + this.w; i++){
-                DrawImageSimple(imgPixel, i, this.y, 1, 1)
-                DrawImageSimple(imgPixel, i, this.y + this.h, 1, 1)
+                DrawRectangle(i, this.y, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(i, this.y + this.h, 1, 1, 255, 255, 255, 1)
             }
-
-
             for (var i = this.y; i < this.y + this.h; i++){
-                DrawImageSimple(imgPixel, this.x, i, 1, 1)
-                DrawImageSimple(imgPixel, this.x + this.w, i, 1, 1)
+                DrawRectangle(this.x, i, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(this.x + this.w, i, 1, 1, 255, 255, 255, 1)
             }
-            */
         },
 
-        collision:function(){
+        collisionFloor:function(){
+            for (var i = 0; i < listFloor.length; i++){
+                if ((this.y + this.h) > listFloor[i].y){
+                    this.y = (listFloor[i].y - this.h)
+                    this.vy = 0
+                    this.ay = 0
+                    this.ground = true
+                }
+            }
+        },
 
-            for (var i = 0; i < cubosLista.length; i++){
+        collisionCubos:function(){
 
-                var colx1 = (this.x + this.w) > cubosLista[i].x
-                var colx2 = this.x < (cubosLista[i].x + cubosLista[i].w)
+            for (var i = 0; i < listCubes.length; i++){
+
+                var colx1 = (this.x + this.w) > listCubes[i].x
+                var colx2 = this.x < (listCubes[i].x + listCubes[i].w)
                 var colx = colx1 && colx2
 
-                var coly1 = (this.y + this.h) > cubosLista[i].y
-                var coly2 = this.y < (cubosLista[i].y + cubosLista[i].h)
+                var coly1 = (this.y + this.h) > listCubes[i].y
+                var coly2 = this.y < (listCubes[i].y + listCubes[i].h)
                 var coly = coly1 && coly2
 
 
@@ -165,15 +169,15 @@ function Generador(){
         x: screenWidth,
         y: screenHeight/2,
         canSpawn: false,
-        minTime: 2,
+        minTime: 1,
         maxTime: 5,
 
         generateCube: function(){
             var rand = Math.random()
             if (rand > 0.5){
-                cubosLista.push(new Cubo(this.x, this.y, 16, 16, speed))
+                listCubes.push(new Cube(this.x, this.y, 80, 16, speed))
             }else{
-                cubosLista.push(new Cubo(this.x, this.y, 16, 32, speed))
+                listCubes.push(new Cube(this.x, this.y, 16, 32, speed))
             }
 
             setTimeout(() => {
@@ -189,8 +193,8 @@ function Generador(){
     return generador
 }
 
-function Cubo(_x, _y, _w, _h, _speed){
-    var cubo = {
+function Cube(_x, _y, _w, _h, _speed){
+    var cube = {
         x: _x,
         y: _y,
         w: _w,
@@ -216,24 +220,70 @@ function Cubo(_x, _y, _w, _h, _speed){
 
         draw: function(){
             DrawRectangle(this.x, this.y, this.w, this.h, 0, 0, 0, 1)
+
+            // Outline
+            for (var i = this.x; i < this.x + this.w; i++){
+                DrawRectangle(i, this.y, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(i, this.y + this.h, 1, 1, 255, 255, 255, 1)
+            }
+            for (var i = this.y; i < this.y + this.h; i++){
+                DrawRectangle(this.x, i, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(this.x + this.w, i, 1, 1, 255, 255, 255, 1)
+            }
         },
     }
 
-    return cubo
+    return cube
 }
 
-function Suelo(_x, _y, _w, _h){
-    var suelo = {
+function Floor(_x, _y, _w, _h, _speed){
+    var floor = {
+        x: _x,
+        y: _y,
+        w: _w,
+        h: _h,
+        vx: 0,
+        vy: 0,
+        ax: 0,
+        ay: 0,
+        acc: 0,
+        speed: -_speed,
+
+
+        update: function(){
+            // Acc
+            this.ax += this.acc
+
+            // Velocity
+            this.vx = this.ax * elapsed_time + this.speed
+
+            // Position
+            this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
+        },
+
+        draw: function(){
+            DrawImage(imgFloor, this.x, this.y, this.w, this.h, 0, 0, this.angle)
+        }
+    }
+    return floor
+}
+
+function BG(_x, _y, _w, _h){
+    var bg = {
         x: _x,
         y: _y,
         w: _w,
         h: _h,
 
+        update: function(){
+
+        },
+
         draw: function(){
-            DrawRectangle(this.x, this.y, this.w, this.h, 0, 0, 0, 1)
+            DrawImage(imgBG, this.x, this.y, this.w, this.h, 0, 0, this.angle)
         }
     }
-    return suelo
+    return bg
 }
 
 function GameOver(_x, _y){
@@ -250,14 +300,53 @@ function GameOver(_x, _y){
 
         draw: function(){
             DrawImage(imgGameOver, this.x, this.y, this.w, this.h, this.w/4, this.h/4, this.angle)
-            DrawCircle(this.x, this.y, 1, 255, 255, 255, 1)
         }
     }
     return gameOver
 }
 
-var suelo = new Suelo(0, screenHeight/2+32,screenWidth, 32)
+function Parallax(){
+    var parallax = {
+        
+        canGenerate: true,
+
+        update:function(){
+            for (var i = 0; i < listFloor.length; i++){
+                if (listFloor[i].x + listFloor[i].w < 0){
+                    this.canGenerate = true
+                    listFloor.shift()
+                }
+                if (listFloor[0].x + listFloor[0].w < 800 && this.canGenerate){
+                    this.generateFloor()
+                    this.canGenerate = false
+                }
+                listFloor[i].update()
+            }
+
+        },
+
+        draw:function(){
+            listFloor.forEach(floor =>{
+                floor.draw();
+            })
+        },
+
+        firstFloor: function(){
+            listFloor.push(new Floor(0, 332, 1600, 111, -speed))
+        },
+
+        generateFloor: function(){
+            listFloor.push(new Floor(800, 332, 1600, 111, -speed))
+        }
+    }
+    return parallax
+}
+
+var bg = new BG(0, 0, 1600, 995)
+//var floor = new Floor(0, 332, 1600, 111, speed)
+
 var player = new Player(50, 250)
+var parallax = new Parallax()
 var generador = new Generador()
 var gameOver = new GameOver(0, 100)
 
@@ -268,7 +357,10 @@ function Start()
     imgPlayer.src = "img/player.jpg"
     imgGameOver.src = "img/gameover.png"
     imgPixel.src = "img/pixel.png"
+    imgBG.src = "img/fondo.png"
+    imgFloor.src = "img/piso.png"
 
+    parallax.firstFloor()
     generador.generateCube()
 
 }
@@ -276,16 +368,18 @@ function Start()
 function Update()
 {
     if (!pause){
+        console.log(listFloor.length)
         player.update()
         generador.update()
-        cubosLista.forEach(cubo => {
-        if (cubo.x + 32 < 0){
-            cubosLista.shift()
-            score += 10 + time * .5
-        }
-        cubo.update()
+        parallax.update();
+        listCubes.forEach(cube => {
+            if (cube.x + cube.w < 0){
+                listCubes.shift()
+                score += 10 + time * .5
+            }
+            cube.update()
         });
-
+        time += elapsed_time
         difficultyControl()
     }
 
@@ -309,16 +403,19 @@ function Update()
 function Render()
 {
     //Clean BG
-    DrawRectangle(0, 0, 800, 600, 200, 200, 200, 1)
+    bg.draw();
+
+    parallax.draw()
 
     //Draw pj
     player.draw()
 
-    cubosLista.forEach(cubo => {
-        cubo.draw();
+
+    listCubes.forEach(cube => {
+        cube.draw();
     });
 
-    suelo.draw()
+    //floor.draw()
 
     // Score and Highscore
     SetFont("35px Arial")
@@ -339,8 +436,8 @@ function difficultyControl(){
     speed -= elapsed_time * 1.5
     score += elapsed_time * 1.2
 
-
-    if (score > 500){
-
+    if (time % 25 <= 0.017 && generador.maxTime >= 1){
+        generador.maxTime -= 0.5
     }
+    console.log(generador.maxTime)
 }
