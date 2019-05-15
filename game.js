@@ -28,31 +28,34 @@ var imgPixel = new Image()
 var speed = -150
 
 
+// Objeto player
 function Player(_x, _y, _m){
 
     var player = {
-        x: _x,
-        y: _y,
-        w: 16,
-        h: 32,
-        m: 9,
-        scale: 1,
-        vx: 0,
-        vy: 0,
-        ax: 0,
-        ay: 0,
-        speed: 150,
-        angle: 0,
-        jumpForce: -200000,
-        releaseSpeedJump: -6,
-        g: 980,
-        ground : false,
-        crouch: false,
+        x: _x,  // posicion x                          
+        y: _y,  // posicion y
+        w: 16,  // anchura
+        h: 32,  // altura
+        m: 9,   // masa
+        vx: 0,  // velocidad x
+        vy: 0,  // velocidad y
+        ax: 0,  // aceleracion x
+        ay: 0,  // aceleracion y
+        speed: 150, //
+        angle: 0,   // angulo de imagen
+        jumpForce: -200000, // fuerza de salto
+        g: 980, // gravedad
+        ground : false, // esta en el suelo?
+        crouch: false,  // esta agachado?
 
 
+        // funcion actualizar
         update: function(){
 
+            // resetea aceleracion en y
             this.ay = 0
+
+            // comprueba salto
             if (IsKeyPressed(KEY_SPACE)){
                 if (!isSpacePressed && this.ground){
                     isSpacePressed = true
@@ -62,27 +65,32 @@ function Player(_x, _y, _m){
                 isSpacePressed = false  
             }
 
-
+            // comprueba agachado
             if (IsKeyPressed(KEY_ARROW_DOWN)){
                 crouch = true
             }else{
                 crouch = false
             }
-
+        
+            // se agacha
             if (crouch){
                 this.h = 16
             }else{
                 this.h = 32
             }
 
+            // MRUV
             // Acc
+            // ecuacion de aceleracion
             this.ay += this.g 
 
             // Velocity
+            // ecuacion de velocidad
             this.vx += this.ax * elapsed_time
             this.vy += this.ay * elapsed_time
 
             // Position
+            // ecuacion de posicion
             this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
             this.y += this.vy * elapsed_time + 1/2 * this.ay * (elapsed_time * elapsed_time)
 
