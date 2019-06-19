@@ -4,6 +4,7 @@ class Player{
         this.y = _y;
         this.z = 16;
         this.w = 16;
+        this.d = 10
         this.h = 32;
         this.m = 9; 
         this.vx = 0;
@@ -75,7 +76,7 @@ class Player{
         this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
         // Collision
-        //this.collisionCubos()
+        this.collisionCubos()
         
         // Collision floor
         this.collisionFloor()
@@ -83,7 +84,7 @@ class Player{
         // Collision Walls
         this.collisionWalls()
 
-        console.log("z: " + this.z)
+        //console.log(`x: ${this.x}, y: ${this.y}, z: ${this.z}`)
     }
 
     jump(){
@@ -125,10 +126,10 @@ class Player{
     }
 
     collisionWalls () {
-        if (this.z >= 32 || this.z <= 0) {
+        if (this.z >= 32 || this.z - this.d <= 0) {
             this.az = 0
             this.vz = 0
-            this.z = this.z >= 32? 32:0
+            this.z = this.z >= 32? 32 : this.d
         }
     }
 
@@ -144,8 +145,12 @@ class Player{
             var coly2 = this.y < (listCubes[i].y + listCubes[i].h)
             var coly = coly1 && coly2
 
+            var colz1 = (this.z + this.d) > listCubes[i].z
+            var colz2 = this.z < (listCubes[i].z + listCubes[i].d)
+            var colz = colz1 && colz2
 
-            if(colx && coly){
+
+            if(colx && coly && colz){
                 isGameOver = true
             }
         }

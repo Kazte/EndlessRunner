@@ -60,7 +60,7 @@ function Start()
 {
     SetScreenSize(800, 600)
     camara = new Camara()
-    player = new Player(50, 250)
+    player = new Player(50, 305)
     parallax = new Parallax()
     gameOver = new GameOver(0, 100)
     generador = new Generador()

@@ -1,5 +1,5 @@
 class Cube{
-    constructor(_x, _y, _z, _d, _w, _h, _speed){
+    constructor(_x, _y, _z, _w, _h, _d,_speed){
         this.x = _x;
         this.y = _y;
         this.z = _z

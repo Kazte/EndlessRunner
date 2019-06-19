@@ -11,9 +11,9 @@ class Generador{
     generateCube(){
         var rand = Math.random()
         if (rand > 0.5){
-            listCubes.push(new Cube(this.x, this.y, 32, 16, 80, 16, speed))
+            listCubes.push(new Cube(this.x, this.y, Random_Choose([16, 32]), 80, 16, 16,speed))
         }else{
-            listCubes.push(new Cube(this.x, this.y, 32, 32, 16, 32, speed))
+            listCubes.push(new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 32,speed))
         }
 
         setTimeout(() => {

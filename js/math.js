@@ -334,6 +334,16 @@ function Random(x0 , x1)
     return Math.random() * (x1-x0) + x0;
 }
 
+/**
+ * Numero aleatorio entre los dados
+ * @function Random_Choose
+ * @param {array} array
+ * @return {float} Devuelve un numero aleatorio entre todos los del array
+ */
+function Random_Choose(array) 
+{
+    return array[Math.floor(Math.random() * array.length)];
+}
 
 /**
  * Color aleatorio
