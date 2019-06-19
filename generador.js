@@ -9,13 +9,24 @@ class Generador{
     }
 
     generateCube(){
-        var rand = Math.random()
-        if (rand > 0.5){
-            listCubes.push(new Cube(this.x, this.y, Random_Choose([16, 32]), 80, 16, 16,speed))
-        }else{
-            listCubes.push(new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 32,speed))
-        }
+        var rand = Random_Choose([1, 2])
 
+        switch (rand) {
+            case 1:
+                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]), 80, 16, 16,speed)
+                listCubes.push(cube)
+                listDraw.push(cube)
+                break;
+
+            case 2:
+                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 32,speed)
+                listCubes.push(cube)
+                listDraw.push(cube)
+                break;
+        
+            default:
+                break;
+        }
         setTimeout(() => {
             this.generateCube()
         }, Random(this.minTime, this.maxTime) * 1000);
@@ -23,5 +34,8 @@ class Generador{
     }
 
     update(){
+        // if (listCubes.length == 0){
+        //     this.generateCube()
+        // }
     }
 }

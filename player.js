@@ -149,9 +149,10 @@ class Player{
             var colz2 = this.z < (listCubes[i].z + listCubes[i].d)
             var colz = colz1 && colz2
 
+            //console.log(`${colx} && ${coly} && ${colz}`)
 
             if(colx && coly && colz){
-                isGameOver = true
+                //isGameOver = true
             }
         }
     }

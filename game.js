@@ -3,6 +3,8 @@ var listCubes = []
 var listFloor = []
 var listBG = []
 
+var listDraw = []
+
 var KEY_R 				= 82
 var KEY_ARROW_DOWN		= 40
 var KEY_ARROW_UP		= 38
@@ -61,9 +63,12 @@ function Start()
     SetScreenSize(800, 600)
     camara = new Camara()
     player = new Player(50, 305)
+    
     parallax = new Parallax()
     gameOver = new GameOver(0, 100)
     generador = new Generador()
+
+    listDraw.push(player)
 
     imgPlayer.src = "img/player.jpg"
     imgGameOver.src = "img/gameover.png"
@@ -76,8 +81,13 @@ function Start()
 
 }
 
+
 function Update()
 {
+
+    
+
+
     if (!pause){
         player.update();
         generador.update();
@@ -107,20 +117,52 @@ function Update()
 
 }
 
+function ordenarZ(array) {
+    if (array.length < 1){
+        return []
+    }
+
+    var left = []
+    var right = []
+    var pivot = array[0]
+
+    for (let i = 1; i < array.length; i++) {
+        if (array[i].z < pivot.z){
+            left.push(array[i])
+        }else{
+            right.push(array[i])
+        }
+    }
+    return [].concat(ordenarZ(left), pivot, ordenarZ(right))
+}
+
+console.log(ordenarZ([15,9,8,5,4,2,1,7,3]))
+
+function removeItemFromArr(arr, item) {
+    return arr.filter( e => e !== item )
+}
+
 function Render()
 {
     //Clean BG
 
     parallax.draw()
+    
+    
+    ordenarZ[listDraw]
+    
+    for (let i = 0; i < listDraw.length; i++) {
+        if (listDraw[i].x + listDraw[i].w < 0){
+            listDraw.splice(i, 1);
+        }
+        listDraw[i].draw();
+    }
 
-    //Draw pj
-    player.draw()
+    if (IsKeyPressed(65)){
+        console.log(listDraw)
+    }
 
-
-    listCubes.forEach(cube => {
-        cube.draw();
-    });
-
+    
 
     // Score and Highscore
     SetFont("35px Arial")
