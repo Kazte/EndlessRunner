@@ -1,5 +1,5 @@
 /*
-Version 2 (20/3/2019)
+Version 5 (22/5/2019)
 
 ===================
 ===== SUMARIO =====
@@ -10,6 +10,7 @@ VARIABLES:
 time -> el tiempo en segundos desde que empezó la simulación
 screenWidth, screenHeight -> el ancho y alto de la pantalla
 elapsed_time -> la duración del frame
+mouse_x, mouse_y -> posicion en x,y del mouse
 
 ----------------
 
@@ -24,14 +25,44 @@ Se ejecuta todos los cuadros antes de Render. Aqui debería estar la lógica del
 Render()
 Se ejecuta todos los cuadros despues de Update. Aqui debería estar el dibujado del juego
 
-IsKeyPressed(int codigo)
+
+INPUT:
+
+GetKey(int codigo)
 Devuelve verdadero si la tecla con el codigo dado esta siendo presionada, falso en caso contrario. Para saber el codigo de las teclas visita 'http://keycode.info/'
+
+GetKeyDown(int codigo)
+Devuelve verdadero si la tecla con el codigo dado fue presionada en este frame.
+
+GetKeyUp(int codigo)
+Devuelve verdadero si la tecla con el codigo dado fue soltada en este frame.
+
+GetMouseButton()
+Devuelve verdadero si el boton izquierdo del mouse está siendo presionado, falso de lo contrario.
+
+GetMouseButtonDown()
+Devuelve verdadero si el boton izquierdo del mouse fue presionado en este frame.
+
+GetMouseButtonUp()
+Devuelve verdadero si el boton izquierdo del mouse fue soltado en este frame.
+
+
+RENDER:
 
 DrawImageSimple(Image img, float x, float y, float w, float h)
 Dibuja la imagen img (hay que inicializarla con 'new Image()' y setear el 'image.src' al path de la imagen) en (x,y), con el ancho y alto (w,h)
 
 DrawImage(Image img, float x, float y, float w, float h, float ox, float oy, float angulo)
-Idem DrawSpriteSimple pero se debe dar tambien un defasaje del centro (ox, oy) y un angulo de rotación
+Idem DrawImageSimple pero se debe dar tambien un defasaje del centro (ox, oy) y un angulo de rotación
+
+Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
+DrawSubImageSimple(Image img, float x, float y, float w, float h, float sx, float sy, float sw, float sh)
+
+Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
+DrawSubImage(Image img, float x, float y, float w, float h, float sx, float sy, float sw, float sh, float ox, float oy, float angleInRadians)
+
+Habilita o deshabilita el filtro bilineal del canvas, permitiendo pixelart nitido sin borronear
+SetPixelated(bool pixelated)
 
 SetFont(string font)
 Determina la fuente de los DrawText de ahora en más.
@@ -87,16 +118,24 @@ var elapsed_time = 1/60;
 
 var screenWidth = 800;
 var screenHeight = 600;
+var mouse_button = false;
+var mouse_buttonPressed = false;
+var mouse_x = 0;
+var mouse_y = 0;
+
+var frameInterval;
 
 function SetContext(newCtx)
 {
-	ctx = newCtx;
+    ctx = newCtx;
 	ctxset = true;
 }
 
 function SetFPS(fps)
 {
 	elapsed_time = 1/fps;
+	clearInterval(frameInterval);
+	frameInterval = setInterval(Frame, elapsed_time * 1000);
 }
 
 function GetContext()
@@ -123,7 +162,16 @@ function Frame()
 {
 	Update();
 	Render();
+	EndFrame();
 	time += elapsed_time;
+}
+
+function EndFrame()
+{
+    for (var i = 0; i < 256; ++i) {
+        _keyboardPressed[i] = _keyboard[i];
+    }
+    mouse_buttonPressed = mouse_button;
 }
 
 function Initialize()
@@ -131,8 +179,9 @@ function Initialize()
 	canvas = document.getElementById('mycanvas');
 	SetContext(canvas.getContext('2d'));
 	SetScreenSize( window.innerWidth, window.innerHeight);
-	setInterval(Frame, elapsed_time * 1000);
+	frameInterval = setInterval(Frame, elapsed_time * 1000);
 	InitKeyboard();
+	InitMouse();
 	Start();
 } 
 
@@ -154,7 +203,7 @@ function GetCanvasHeight()
 	return ctx.canvas.height;
 }
 
-// Sprites
+// Images
 
 /**
  * Dibuja una imagen en la posicion (x, y) con ancho y alto (w, h) con un corrimiento del origen de (ox, oy) y una rotacion respecto al origen de 'angleInRadians'
@@ -191,6 +240,53 @@ function DrawImageSimple(image, x, y, w, h)
 	ctx.translate(x, y);
 	ctx.drawImage(image, 0, 0, w, h);
 	ctx.translate(-x, -y);
+}
+
+/**
+ * Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
+ * @function DrawRectangle
+ * @param {Image} image
+ * @param {float} x
+ * @param {float} y
+ * @param {float} w
+ * @param {float} h
+ * @param {float} sx
+ * @param {float} sy
+ * @param {float} sw
+ * @param {float} sh
+ */
+function DrawSubImageSimple(image, x, y, w, h, sx, sy, sw, sh)
+{
+	ctx.translate(x, y);
+	ctx.drawImage(image, sx+0.01, sy+0.01, sw-0.02, sh-0.02, 0, 0, w, h);
+	ctx.translate(-x, -y);
+}
+
+/**
+ * Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
+ * @function DrawRectangle
+ * @param {Image} image
+ * @param {float} x
+ * @param {float} y
+ * @param {float} w
+ * @param {float} h
+ * @param {float} sx
+ * @param {float} sy
+ * @param {float} sw
+ * @param {float} sh
+ */
+function DrawSubImage(image, x, y, w, h, sx, sy, sw, sh, ox, oy, angleInRadians)
+{
+	ctx.translate(x, y);
+	ctx.rotate(angleInRadians);
+	ctx.drawImage(image, sx+0.01, sy+0.01, sw-0.02, sh-0.02, ox, oy, w, h);
+	ctx.rotate(-angleInRadians);
+	ctx.translate(-x, -y);
+}
+
+function SetPixelated(b)
+{
+	ctx.imageSmoothingEnabled = !b;
 }
 
 // Primitives
@@ -288,7 +384,7 @@ function DrawCircle(x, y, radius, r, g, b, a) {
     if (ctxset) {
 		ctx.fillStyle = 'rgba('+r+','+g+','+b+','+a+')';
 		ctx.beginPath();
-		ctx.arc(x, y, radius*2, 0, 2 * Math.PI);
+		ctx.arc(x, y, radius, 0, 2 * Math.PI);
 		ctx.fill();
 	}
 }
@@ -320,6 +416,7 @@ function DrawLine(x1, y1, x2, y2, w, r, g, b, a) {
 // Keyboard
 
 var _keyboard = new Array(256)
+var _keyboardPressed = new Array(256)
 
 function doKeyDown(e) {
     if (e.keyCode >= 0 && e.keyCode<255)    
@@ -328,14 +425,12 @@ function doKeyDown(e) {
     }
 }
 
-
 function doKeyUp(e) {
     if (e.keyCode >= 0 && e.keyCode<255)    
 	{
         _keyboard[e.keyCode] = false;
     }
 }
-
 
 function InitKeyboard()
 {
@@ -346,6 +441,117 @@ function InitKeyboard()
 	document.addEventListener("keyup", doKeyUp, true);
 }
 
+/**
+ * [Deprecado] Devuelve el estado de la tecla de código 'i'
+ * @function IsKeyPressed
+ * @param {int} i
+ */
 function IsKeyPressed(i) {
-	return _keyboard[i];
+	return GetKeyDown(i);
+}
+
+/**
+ * Devuelve el estado de la tecla de código 'i'
+ * @function GetKey
+ * @param {int} i
+ */
+function GetKey(i) {
+    return _keyboard[i];
+}
+
+/**
+ * Devuelve verdadero si la tecla de código 'i' fue presionada en este frame
+ * @function GetKeyDown
+ * @param {int} i
+ */
+function GetKeyDown(i) {
+    return _keyboard[i] && !_keyboardPressed[i];
+}
+
+/**
+ * Devuelve verdadero si la tecla de código 'i' fue soltada en este frame
+ * @function GetKeyUp
+ * @param {int} i
+ */
+function GetKeyUp(i) {
+    return !_keyboard[i] && _keyboardPressed[i];
+}
+
+// Mouse
+
+function InitMouse() {
+    document.addEventListener("mousedown", doMouseDown, true);
+    document.addEventListener("mouseup", doMouseUp, true);
+    document.addEventListener("mousemove", function (evt) {
+        var mousePos = GetMousePos(canvas, evt);
+        mouse_x = mousePos.x;
+        mouse_y = mousePos.y;
+    }, true);
+}
+
+function doMouseDown(e) {
+    mouse_button = true;
+}
+
+function doMouseUp(e) {
+    mouse_button = false;
+}
+
+/**
+ * Devuelve el estado del boton izquierdo del mouse
+ * @function GetMouseButton
+ */
+function GetMouseButton() {
+    return mouse_button;
+}
+
+/**
+ * Devuelve verdadero si el boton izquierdo del mouse fue presionado en este frame
+ * @function GetMouseButton
+ */
+function GetMouseButtonDown() {
+    return mouse_button && !mouse_buttonPressed;
+}
+
+/**
+ * Devuelve verdadero si el boton izquierdo del mouse fue soltado en este frame
+ * @function GetMouseButton
+ */
+function GetMouseButtonUp() {
+    return !mouse_button && mouse_buttonPressed;
+}
+
+function GetMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+class SpriteSheet {
+	constructor(img, columns, rows, frameWidth, frameHeight, frameOffsetX, frameOffsetY, firstFrameOriginX, firstFrameOriginY) {
+		this.img = img
+		this.columns = columns
+		this.rows = rows
+		this.frameWidth = frameWidth
+		this.frameHeight = frameHeight
+		this.frameOffsetX = frameOffsetX
+		this.frameOffsetY = frameOffsetY
+		this.originX = firstFrameOriginX
+		this.originY = firstFrameOriginY
+	}
+
+	DrawFrameSimple(frame, x, y, w, h) {
+		const framex = frame%this.columns;
+		const framey = Math.floor(frame/this.columns);
+		DrawSubImageSimple(this.img, x, y, w, h, this.originX+this.frameOffsetX*framex, this.originY+this.frameOffsetY*framey, this.frameWidth, this.frameHeight)
+	}
+
+	DrawFrame(frame, x, y, w, h, ox, oy, angle) {
+		const framex = frame%this.columns;
+		const framey = Math.floor(frame/this.columns);
+		DrawSubImage(this.img, x, y, w, h, this.originX+this.frameOffsetX*framex, this.originY+this.frameOffsetY*framey, this.frameWidth, this.frameHeight, ox, oy, angle)
+	
+	}
 }

@@ -1,15 +1,15 @@
-
 var listCubes = []
 
 var listFloor = []
 var listBG = []
 
-var KEY_R = 82
+var KEY_R 				= 82
 var KEY_ARROW_DOWN		= 40
 var KEY_ARROW_UP		= 38
 var KEY_ARROW_LEFT		= 37
 var KEY_ARROW_RIGHT		= 39
-var KEY_SPACE			= 32
+var KEY_SPACE           = 32
+var KEY_C               = 67
 
 var pause = false
 var isGameOver = false
@@ -18,10 +18,6 @@ var time = 0;
 
 var highScore = 0
 var score = 0
-
-var isSpacePressed = false
-var isRightPressed = false
-var isLeftPressed = false
 
 var imgPlayer = new Image()
 var imgGameOver = new Image()
@@ -39,19 +35,23 @@ function Player(_x, _y, _m){
     var player = {
         x: _x,                 
         y: _y,
+        z: 16,
         w: 16,
         h: 32,
         m: 9, 
         vx: 0,
         vy: 0,
+        vz: 0,
         ax: 0,
         ay: 0,
-        speed: 150, 
-        angle: 0,   
-        jumpForce: -200000, 
+        az: 0,
+        angle: 0,
+        moveZ: 20000,
+        fricFloor: 100,
+        jumpForce: -200000,
         g: 980, 
-        ground : false, 
-        crouch: false,  
+        ground : false,
+        crouch: false,
 
 
         // funcion actualizar
@@ -59,46 +59,67 @@ function Player(_x, _y, _m){
 
             // resetea aceleracion en y
             this.ay = 0
+            this.az = 0
 
             // comprueba salto
-            if (IsKeyPressed(KEY_SPACE)){
-                if (!isSpacePressed && this.ground){
-                    isSpacePressed = true
+            if (GetKeyDown(KEY_SPACE)){
+                if (this.ground){
                     this.jump()
                 }
-            }else{
-                isSpacePressed = false  
             }
 
             // comprueba agachado
-            if (IsKeyPressed(KEY_ARROW_DOWN)){
+            if (GetKey(KEY_C)){
                 crouch = true
             }else{
                 crouch = false
             }
-        
+
+            if (this.ground) {
+                if (GetKey(KEY_ARROW_DOWN)) {
+                    this.az += this.moveZ / this.m
+                }
+                if (GetKey(KEY_ARROW_UP)) {
+                    this.az += -this.moveZ / this.m
+                }
+            }
+
+            this.fricForce = -this.fricFloor * (this.m * 9.8) * Math.sign(this.vz) * Math.min(1, Math.abs(this.vz / this.fricFloor * 2))
+            this.az += this.fricForce / this.m
+
             // se agacha
             if (crouch){
                 this.h = 16
+                if (!this.ground) {
+                    this.ay += (-this.jumpForce * 0.1) / this.m
+                }
             }else{
                 this.h = 32
             }
 
             // MRUV
             // Acc
-            this.ay += this.g 
+            this.ay += this.g
 
             // Velocity
             this.vy += this.ay * elapsed_time
+            this.vz += this.az * elapsed_time
 
             // Position
-            this.y += this.vy * elapsed_time + 1/2 * this.ay * (elapsed_time * elapsed_time)
+            this.y += this.vy * elapsed_time + 1 / 2 * this.ay * (elapsed_time * elapsed_time)
+            this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
             // Collision
-            this.collisionCubos()
+            //this.collisionCubos()
             
             // Collision floor
             this.collisionFloor()
+
+            // Collision Walls
+            this.collisionWalls()
+
+            console.log("z: " + this.z)
+
         },
 
         
@@ -117,14 +138,14 @@ function Player(_x, _y, _m){
         },
 
         draw: function(){
-            DrawImage(imgPlayer, this.x, this.y, this.w, this.h, 0, 0, this.angle)
+            DrawImage(imgPlayer, this.x, this.y + this.z, this.w, this.h, 0, 0, this.angle)
             
             // Outline
             for (var i = this.x; i < this.x + this.w; i++){
-                DrawRectangle(i, this.y, 1, 1, 255, 255, 255, 1)
-                DrawRectangle(i, this.y + this.h, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(i, this.y + this.z, 1, 1, 255, 255, 255, 1)
+                DrawRectangle(i, this.y + this.h + this.z, 1, 1, 255, 255, 255, 1)
             }
-            for (var i = this.y; i < this.y + this.h; i++){
+            for (var i = this.y + this.z; i < this.y + this.z + this.h; i++) {
                 DrawRectangle(this.x, i, 1, 1, 255, 255, 255, 1)
                 DrawRectangle(this.x + this.w, i, 1, 1, 255, 255, 255, 1)
             }
@@ -133,11 +154,19 @@ function Player(_x, _y, _m){
         collisionFloor:function(){
             for (var i = 0; i < listFloor.length; i++){
                 if ((this.y + this.h) > listFloor[i].y){
-                    this.y = (listFloor[i].y - this.h)
+                    this.y = listFloor[i].y - this.h
                     this.vy = 0
                     this.ay = 0
                     this.ground = true
                 }
+            }
+        },
+
+        collisionWalls: function () {
+            if (this.z >= 32 || this.z <= 0) {
+                this.az = 0
+                this.vz = 0
+                this.z = this.z >= 32? 32:0
             }
         },
 
@@ -147,7 +176,7 @@ function Player(_x, _y, _m){
 
                 var colx1 = (this.x + this.w) > listCubes[i].x
                 var colx2 = this.x < (listCubes[i].x + listCubes[i].w)
-                var colx = colx1 && colx2
+                var colx = colx1 && colx2 
 
                 var coly1 = (this.y + this.h) > listCubes[i].y
                 var coly2 = this.y < (listCubes[i].y + listCubes[i].h)
@@ -274,16 +303,52 @@ function BG(_x, _y, _w, _h){
         y: _y,
         w: _w,
         h: _h,
+        vx: 0,
+        vy: 0,
+        ax: 0,
+        ay: 0,
+        acc: 0,
+        speed: -25,
 
         update: function(){
+            // Acc
+            this.ax += this.acc
 
+            // Velocity
+            this.vx = this.ax * elapsed_time + this.speed
+
+            // Position
+            this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
         },
 
         draw: function(){
             DrawImage(imgBG, this.x, this.y, this.w, this.h, 0, 0, this.angle)
         }
     }
+
     return bg
+}
+
+function Rotation(imagen,x,y,w,h,w2,h2,angulo){
+   var rt={
+       m : 9,
+       vx : 0,
+       vy : 0,
+       ax : 0,
+       ay : 0,
+       acc: 0,
+
+    update: function(){
+        // Acc
+        this.ax += this.acc
+
+        // Velocity
+        this.vx = this.ax * elapsed_time + this.speed
+
+        // Position
+        x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
+    }
+   }
 }
 
 function GameOver(_x, _y){
@@ -295,54 +360,80 @@ function GameOver(_x, _y){
         angle: 0,
 
         update: function(){
-            
+        	
         },
 
         draw: function(){
-            DrawImage(imgGameOver, this.x, this.y, this.w, this.h, this.w/4, this.h/4, this.angle)
+            DrawImage(imgGameOver, this.x, this.y, this.w, this.h, this.w / 4, this.h / 4, this.angle)
+            Rotation(imgGameOver, this.x, this.y, this.w, this.h, this.w / 4, this.h / 4, this.angle)
         }
     }
     return gameOver
 }
 
+
 function Parallax(){
     var parallax = {
         
-        canGenerate: true,
+        canGenerateFloor: true,
+        canGenerateBg: true,
 
         update:function(){
             for (var i = 0; i < listFloor.length; i++){
                 if (listFloor[i].x + listFloor[i].w < 0){
-                    this.canGenerate = true
+                    this.canGenerateFloor = true
                     listFloor.shift()
                 }
-                if (listFloor[0].x + listFloor[0].w < 800 && this.canGenerate){
+                if (listFloor[0].x + listFloor[0].w < 800 && this.canGenerateFloor){
                     this.generateFloor()
-                    this.canGenerate = false
+                    this.canGenerateFloor = false
                 }
+
+                
                 listFloor[i].update()
             }
 
-        },
+            for (var i = 0; i < listBG.length; i++) {
+            	if (listBG[i].x + listBG[i].w < 0){
+                    this.canGenerateBg = true
+                    listBG.shift()
+                }
+                if (listBG[0].x + listBG[0].w < 800 && this.canGenerateBg){
+                    this.generateBg()
+                    this.canGenerateBg = false
+                }
+            	listBG[i].update()
+            }  
+  
+        },  
 
         draw:function(){
-            listFloor.forEach(floor =>{
-                floor.draw();
+        	listBG.forEach(bg =>{
+            	bg.draw()
             })
+            listFloor.forEach(floor =>{
+                floor.draw()
+            })
+            
+
         },
 
         firstFloor: function(){
             listFloor.push(new Floor(0, 332, 1600, 111, -speed))
+            listBG.push(new BG(0, 0, 1600, 995))
         },
 
         generateFloor: function(){
             listFloor.push(new Floor(800, 332, 1600, 111, -speed))
+        },
+        generateBg: function(){
+            listBG.push(new BG(800, 0, 1600, 995))
         }
     }
     return parallax
 }
 
-var bg = new BG(0, 0, 1600, 995)
+//var bg = new BG(0, 0, 1600, 995)
 //var floor = new Floor(0, 332, 1600, 111, speed)
 
 var player = new Player(50, 250)
@@ -368,7 +459,6 @@ function Start()
 function Update()
 {
     if (!pause){
-        console.log(listFloor.length)
         player.update()
         generador.update()
         parallax.update();
@@ -386,6 +476,7 @@ function Update()
     gameOver.update()
 
     if (isGameOver){
+    	gameOver.update()
         pause = true
         if (IsKeyPressed(KEY_R)){
             location.reload()
@@ -403,7 +494,6 @@ function Update()
 function Render()
 {
     //Clean BG
-    bg.draw();
 
     parallax.draw()
 
@@ -415,7 +505,6 @@ function Render()
         cube.draw();
     });
 
-    //floor.draw()
 
     // Score and Highscore
     SetFont("35px Arial")
@@ -439,5 +528,4 @@ function difficultyControl(){
     if (time % 25 <= 0.017 && generador.maxTime >= 1){
         generador.maxTime -= 0.5
     }
-    console.log(generador.maxTime)
 }
