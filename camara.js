@@ -1,11 +1,12 @@
 class Camara{
     constructor(){
-        this.x = 0;
-        this.y = 0;
+        this.x = 32;
+        this.y = 305;
     }
 
     update(){
-        this.x = player.x
+        this.x = player.x - 32
+        this.y = player.y - 305
     }
 
 }

@@ -1,12 +1,12 @@
 class Player{
     constructor(_x, _y){
-        this.x = _x;                 
+        this.x = _x;
         this.y = _y;
         this.z = 16;
         this.w = 16;
         this.d = 10
         this.h = 32;
-        this.m = 9; 
+        this.m = 9;
         this.vx = 0;
         this.vy = 0;
         this.vz = 0;
@@ -17,7 +17,7 @@ class Player{
         this.moveZ = 20000;
         this.fricFloor = 100;
         this.jumpForce = -200000;
-        this.g = 980; 
+        this.g = 980;
         this.ground = false;
         this.crouch = false;
     }
@@ -65,19 +65,22 @@ class Player{
 
         // MRUV
         // Acc
+        this.ax += 0.2
         this.ay += this.g
 
         // Velocity
+        this.vx += this.ax * elapsed_time
         this.vy += this.ay * elapsed_time
         this.vz += this.az * elapsed_time
 
         // Position
+        this.x += this.vx * elapsed_time + 1 / 2 * this.ax * (elapsed_time * elapsed_time)
         this.y += this.vy * elapsed_time + 1 / 2 * this.ay * (elapsed_time * elapsed_time)
         this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
         // Collision
         this.collisionCubos()
-        
+
         // Collision floor
         this.collisionFloor()
 
@@ -101,17 +104,7 @@ class Player{
     }
 
     draw(){
-        DrawImage(imgPlayer, this.x, this.y + this.z, this.w, this.h, 0, 0, this.angle)
-        
-        // Outline
-        for (var i = this.x; i < this.x + this.w; i++){
-            DrawRectangle(i, this.y + this.z, 1, 1, 255, 255, 255, 1)
-            DrawRectangle(i, this.y + this.h + this.z, 1, 1, 255, 255, 255, 1)
-        }
-        for (var i = this.y + this.z; i < this.y + this.z + this.h; i++) {
-            DrawRectangle(this.x, i, 1, 1, 255, 255, 255, 1)
-            DrawRectangle(this.x + this.w, i, 1, 1, 255, 255, 255, 1)
-        }
+        DrawImage(imgPlayer, this.x - camara.x, this.y + this.z - camara.y, this.w, this.h, 0, 0, this.angle)
     }
 
     collisionFloor(){
@@ -139,7 +132,7 @@ class Player{
 
             var colx1 = (this.x + this.w) > listCubes[i].x
             var colx2 = this.x < (listCubes[i].x + listCubes[i].w)
-            var colx = colx1 && colx2 
+            var colx = colx1 && colx2
 
             var coly1 = (this.y + this.h) > listCubes[i].y
             var coly2 = this.y < (listCubes[i].y + listCubes[i].h)
@@ -153,6 +146,7 @@ class Player{
 
             if(colx && coly && colz){
                 //isGameOver = true
+                console.log("Collision");
             }
         }
     }

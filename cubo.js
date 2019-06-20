@@ -16,17 +16,17 @@ class Cube{
     }
 
     update (){
-        // Acc
-        this.ax += this.acc
-
-        // Velocity
-        this.vx = this.ax * elapsed_time + this.speed
-
-        // Position
-        this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
+        // // Acc
+        // this.ax += this.acc
+        //
+        // // Velocity
+        // this.vx = this.ax * elapsed_time + this.speed
+        //
+        // // Position
+        // this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
     }
 
     draw (){
-        DrawRectangle(this.x, this.y + this.z, this.w, this.h, 0, 0, 0, 1)
+        DrawRectangle(this.x - camara.x, this.y + this.z - camara.y, this.w, this.h, 0, 0, 0, 1)
     }
 }

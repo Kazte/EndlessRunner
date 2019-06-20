@@ -19,11 +19,11 @@ class Generador{
                 break;
 
             case 2:
-                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 32,speed)
+                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 16,speed)
                 listCubes.push(cube)
                 listDraw.push(cube)
                 break;
-        
+
             default:
                 break;
         }
