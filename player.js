@@ -41,7 +41,7 @@ class Player{
             this.crouch = false
         }
 
-        if (this.ground) {
+        if (this.ground && !this.crouch) {
             if (GetKey(KEY_ARROW_DOWN)) {
                 this.az += this.moveZ / this.m
             }
@@ -65,7 +65,11 @@ class Player{
 
         // MRUV
         // Acc
-        this.ax += 0.2
+        if (this.vx < 300){
+            this.ax += 0.2
+        }else{
+            this.ax = 1.2
+        }
         this.ay += this.g
 
         // Velocity
@@ -145,7 +149,7 @@ class Player{
             //console.log(`${colx} && ${coly} && ${colz}`)
 
             if(colx && coly && colz){
-                //isGameOver = true
+                isGameOver = true
                 console.log("Collision");
             }
         }

@@ -30,28 +30,6 @@ var imgFloor = new Image()
 // Dificultad del juego
 var speed = -150
 
-function Rotation(imagen, x, y, w, h, w2, h2, angulo) {
-    var rt = {
-        m: 9,
-        vx: 0,
-        vy: 0,
-        ax: 0,
-        ay: 0,
-        acc: 0,
-
-        update: function() {
-            // Acc
-            this.ax += this.acc
-
-            // Velocity
-            this.vx = this.ax * elapsed_time + this.speed
-
-            // Position
-            x += this.vx * elapsed_time + 1 / 2 * this.ax * (elapsed_time * elapsed_time)
-        }
-    }
-}
-
 let camara
 let player
 let parallax
@@ -62,7 +40,7 @@ function Start() {
     SetScreenSize(800, 600)
     SetPixelated(true)
     camara = new Camara()
-    player = new Player(50, 305)
+    player = new Player(100, 305)
 
     parallax = new Parallax()
     gameOver = new GameOver(0, 100)
@@ -75,10 +53,6 @@ function Start() {
     imgPixel.src = "img/pixel.png"
     imgBG.src = "img/fondo.png"
     imgFloor.src = "img/piso.png"
-
-    parallax.firstFloor()
-    generador.generateCube()
-
 }
 
 
@@ -111,12 +85,12 @@ function Update() {
     // Highscore and score
 
     if (IsKeyPressed(65)) {
-        console.log(listFloor)
+        console.log(listBG)
     }
 
 
     camara.update()
-    console.log(camara.x, camara.y);
+    //console.log(camara.x, camara.y);
 
 }
 
@@ -146,17 +120,15 @@ function removeItemFromArr(arr, item) {
 // todo: Pelota q cae y rebota
 function Render() {
     //Clean BG
-    parallax.draw()
+    parallax.drawBG()
+    parallax.drawFloor()
     listDraw = ordenarZ(listDraw)
-
     for (let i = 0; i < listDraw.length; i++) {
         if (listDraw[i].x + listDraw[i].w < 0) {
             listDraw.splice(i, 1);
         }
         listDraw[i].draw();
     }
-
-
 
     // Score and Highscore
     SetFont("35px Arial")
@@ -167,16 +139,13 @@ function Render() {
     SetTextAlign("center")
     DrawText("HighScore: " + Math.ceil(highScore), 500, 40, 0, 0, 0, 1)
 
-    DrawRectangle(800 - camara.x, 0 - camara.y, 100, 100, 255, 255, 255, 1)
-
     if (isGameOver) {
         gameOver.draw()
     }
 }
 
 function difficultyControl() {
-    speed -= elapsed_time * 1.5
-    score += elapsed_time * 1.2
+    score += elapsed_time  * (player.vx * 0.05)
 
     if (time % 25 <= 0.017 && generador.maxTime >= 1) {
         generador.maxTime -= 0.5

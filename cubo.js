@@ -16,14 +16,16 @@ class Cube{
     }
 
     update (){
-        // // Acc
-        // this.ax += this.acc
-        //
-        // // Velocity
-        // this.vx = this.ax * elapsed_time + this.speed
-        //
-        // // Position
-        // this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
+        // if (score > 500){
+        //     // Acc
+        //     this.ax += this.acc
+            
+        //     // Velocity
+        //     this.vx = this.ax * elapsed_time + this.speed
+            
+        //     // Position
+        //     this.x += this.vx * elapsed_time + 1/2 * this.ax * (elapsed_time * elapsed_time)
+        // }
     }
 
     draw (){

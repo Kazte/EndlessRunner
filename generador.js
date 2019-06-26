@@ -6,6 +6,7 @@ class Generador{
         this.canSpawn = false;
         this.minTime = 1;
         this.maxTime = 5;
+        this.generateCube()
     }
 
     generateCube(){
@@ -13,13 +14,13 @@ class Generador{
 
         switch (rand) {
             case 1:
-                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]), 80, 16, 16,speed)
+                var cube = new Cube(this.x + camara.x, this.y, Random_Choose([16, 32]), 150, 16, 16,speed)
                 listCubes.push(cube)
                 listDraw.push(cube)
                 break;
 
             case 2:
-                var cube = new Cube(this.x, this.y, Random_Choose([16, 32]),  16, 32, 16,speed)
+                var cube = new Cube(this.x + camara.x, this.y, Random_Choose([16, 32]),  16, 32, 16,speed)
                 listCubes.push(cube)
                 listDraw.push(cube)
                 break;
@@ -34,8 +35,6 @@ class Generador{
     }
 
     update(){
-        // if (listCubes.length == 0){
-        //     this.generateCube()
-        // }
+        
     }
 }

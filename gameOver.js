@@ -14,6 +14,5 @@ class GameOver{
 
     draw() {
         DrawImage(imgGameOver, this.x, this.y, this.w, this.h, this.w / 4, this.h / 4, this.angle)
-        Rotation(imgGameOver, this.x, this.y, this.w, this.h, this.w / 4, this.h / 4, this.angle)
     }
 }
