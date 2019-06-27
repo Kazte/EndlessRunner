@@ -15,8 +15,10 @@ var KEY_C = 67
 
 var pause = false
 var isGameOver = false
-
+var gravity = 980
 var time = 0;
+
+var par = 5
 
 var highScore = 0
 var score = 0
@@ -26,6 +28,7 @@ var imgGameOver = new Image()
 var imgPixel = new Image()
 var imgBG = new Image()
 var imgFloor = new Image()
+var imgWheel = new Image();
 
 // Dificultad del juego
 var speed = -150
@@ -35,6 +38,8 @@ let player
 let parallax
 let generador
 let gameOver
+let wheel
+
 
 function Start() {
     SetScreenSize(800, 600)
@@ -45,7 +50,6 @@ function Start() {
     parallax = new Parallax()
     gameOver = new GameOver(0, 100)
     generador = new Generador()
-
     listDraw.push(player)
 
     imgPlayer.src = "img/player.jpg"
@@ -53,6 +57,7 @@ function Start() {
     imgPixel.src = "img/pixel.png"
     imgBG.src = "img/fondo.png"
     imgFloor.src = "img/piso.png"
+	imgWheel.src = "img/wheel.png"
 }
 
 
@@ -63,7 +68,7 @@ function Update() {
         generador.update();
         parallax.update();
         listCubes.forEach(cube => {
-            if (cube.x + cube.w < 0) {
+            if (cube.x - camara.x + cube.w < 0) {
                 listCubes.shift()
                 score += 10 + time * .5
             }
@@ -83,11 +88,6 @@ function Update() {
         }
     }
     // Highscore and score
-
-    if (IsKeyPressed(65)) {
-        console.log(listBG)
-    }
-
 
     camara.update()
     //console.log(camara.x, camara.y);
@@ -118,10 +118,14 @@ function removeItemFromArr(arr, item) {
 }
 
 // todo: Pelota q cae y rebota
+
+
 function Render() {
     //Clean BG
     parallax.drawBG()
     parallax.drawFloor()
+
+	// Ordenamiento de z para dibujar
     listDraw = ordenarZ(listDraw)
     for (let i = 0; i < listDraw.length; i++) {
         if (listDraw[i].x + listDraw[i].w < 0) {

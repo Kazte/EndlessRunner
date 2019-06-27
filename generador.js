@@ -10,7 +10,7 @@ class Generador{
     }
 
     generateCube(){
-        var rand = Random_Choose([1, 2])
+        var rand = Random_Choose([1, 2, 3])
 
         switch (rand) {
             case 1:
@@ -23,6 +23,12 @@ class Generador{
                 var cube = new Cube(this.x + camara.x, this.y, Random_Choose([16, 32]),  16, 32, 16,speed)
                 listCubes.push(cube)
                 listDraw.push(cube)
+                break;
+
+            case 3:
+                var wheel = new Wheel(this.x + camara.x, this.y - 200, Random_Choose([16, 32]), 32, 32, 16)
+                listCubes.push(wheel)
+                listDraw.push(wheel)
                 break;
 
             default:

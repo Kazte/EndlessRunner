@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+	html, body {
+	  width:  100%;
+	  height: 100%;
+	  margin: 0;
+	  overflow: hidden;
+	}
+</style>
+<script type="text/javascript" src="js/canvas_engine.js"></script>
+<script type="text/javascript">
+var canvas;
+var ctx;
+var time = 0;
+//=========================================================================================== Tu código aqui
+
+var playerImage = new Image()
+/*
+SpriteSheet(
+imagen,
+columnas,
+filas,
+ancho del frame,
+alto del frame,
+distancia en x entre frames,
+distancia en y entre frames,
+posicion en x del primer frame,
+posicion en y del primer frame
+)
+*/
+var playerSpriteSheet = new SpriteSheet(playerImage, 4, 2, 16, 16, 16, 16, 0, 0)
+var frame = 0
+
+function Start()
+{
+	SetPixelated(true);
+	playerImage.src = "character running.png"
+	SetFont("20px Arial")
+	SetTextAlign("right")
+}
+
+function Update()
+{
+	frame = Math.floor(time*4)%8
+}
+
+function Render()
+{
+	DrawRectangle(0,0,screenWidth,screenHeight, 255, 255, 255, 1)
+
+	//-------------------------------------------------------------
+
+	// Funciones DrawSubImageSimple y DrawSubImage
+	// Simple: posicion y escala
+	DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2-75-64, 128, 128, 0, 0, 16, 16)
+	// No Simple: añade rotacion
+	DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2-75, 128, 128, 0, 0, 16, 16, -64, -64, -time)
+
+	//-------------------------------------------------------------
+
+	// Manejo manual de los frames
+	// Calculo en que columna esta el frame que necesito
+	const framex = frame%4; // 4 es la cantidad de columnas
+	// Calculo en que fila esta el frame que necesito
+	const framey = Math.floor(frame/4); // lo mismo, 4 es la cantidad de columnas
+	// Dibujo la subimagen que esta en esa fila y columna, multiplicados por los 16 pixels de ancho y alto de cada imagen
+	// Tener en cuenta que la posicion y el tamaño de la subimagen es respecto a la imagen original, sin tener en cuenta la escala con la que luego se dibuja
+	// Simple: posicion y escala
+	DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2+75-64, 128, 128, framex*16, framey*16, 16, 16)
+	// No Simple: añade rotacion
+	DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2+75, 128, 128, framex*16, framey*16, 16, 16, -64, -64, -time)
+
+	//-------------------------------------------------------------
+
+	// Clase SpriteSheet
+	// Tiene funciones de dibujo que se encargan de calcular la posicion y tamaño de la subimagen segun el frame
+	// Simple: posicion y escala
+	playerSpriteSheet.DrawFrameSimple(frame, screenWidth/2-64, screenHeight/2+225-64, 128, 128)
+	// No Simple: añade rotacion
+	playerSpriteSheet.DrawFrame(frame, screenWidth/2+256, screenHeight/2+225, 128, 128, -64, -64, -time)
+
+	//-------------------------------------------------------------
+
+	// Sprite original
+	DrawRectangle(screenWidth/2-128+64*framex, screenHeight/2-225-64+64*framey, 64, 64, 255, 0, 0, 1)
+	DrawImageSimple(playerImage, Math.floor(screenWidth/2-128), Math.floor(screenHeight/2-225-64), 256, 128)
+
+	//-------------------------------------------------------------
+	// Texto para el ejemplo
+	DrawText("Imagen original", screenWidth/2-200, screenHeight/2-225, 0, 0, 0, 1)
+	DrawText("Subimagen", screenWidth/2-200, screenHeight/2-200, 255, 0, 0, 1)
+	DrawText("DrawSubImage fijo", screenWidth/2-200, screenHeight/2-75, 0, 0, 0, 1)
+	DrawText("DrawSubImage con", screenWidth/2-200, screenHeight/2+75, 0, 0, 0, 1)
+	DrawText("manejo manual de frames", screenWidth/2-200, screenHeight/2+100, 0, 0, 0, 1)
+	DrawText("Dibujado y manejo de", screenWidth/2-200, screenHeight/2+225, 0, 0, 0, 1)
+	DrawText("frames con clase SpriteSheet", screenWidth/2-200, screenHeight/2+250, 0, 0, 0, 1)
+}
+
+//===========================================================================================
+</script>
+</head>
+<body onload="Initialize();">
+	<canvas id="mycanvas" width="1200" height="800"></canvas>
+</body>
+</html>
+ 

@@ -10,6 +10,6 @@ class BG {
     }
 
     draw() {
-        DrawImage(imgBG, this.x - camara.x, this.y - camara.y, this.w, this.h, 0, 0, this.angle)
+        DrawImage(imgBG, (this.x - camara.x) / par, this.y - camara.y, this.w, this.h, 0, 0, this.angle)
     }
 }

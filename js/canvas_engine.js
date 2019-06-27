@@ -1,5 +1,5 @@
 /*
-Version 5 (22/5/2019)
+Version 5.1 (22/5/2019)
 
 ===================
 ===== SUMARIO =====
@@ -50,19 +50,19 @@ Devuelve verdadero si el boton izquierdo del mouse fue soltado en este frame.
 RENDER:
 
 DrawImageSimple(Image img, float x, float y, float w, float h)
-Dibuja la imagen img (hay que inicializarla con 'new Image()' y setear el 'image.src' al path de la imagen) en (x,y), con el ancho y alto (w,h)
+Dibuja la imagen img (hay que inicializarla con 'new Image()' y setear el 'image.src' al path de la imagen) en (x,y), con el ancho y alto (w,h). Darle un ancho o alto negativo, espeja la imagen.
 
 DrawImage(Image img, float x, float y, float w, float h, float ox, float oy, float angulo)
-Idem DrawImageSimple pero se debe dar tambien un defasaje del centro (ox, oy) y un angulo de rotación
+Idem DrawImageSimple pero se debe dar tambien un defasaje del centro (ox, oy) y un angulo de rotación. Darle un ancho o alto negativo, espeja la imagen, y recordar invertir tambien el defasaje.
 
-Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
 DrawSubImageSimple(Image img, float x, float y, float w, float h, float sx, float sy, float sw, float sh)
+Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total. Darle un ancho o alto negativo, espeja la imagen.
 
-Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total
 DrawSubImage(Image img, float x, float y, float w, float h, float sx, float sy, float sw, float sh, float ox, float oy, float angleInRadians)
+Dibuja una subimagen en la posicion (x, y) con ancho y alto (w, h), usando solo el fragmento de origen sx;sy y de ancho sw;sh de la imagen total. Darle un ancho o alto negativo, espeja la imagen, y recordar invertir tambien el defasaje.
 
-Habilita o deshabilita el filtro bilineal del canvas, permitiendo pixelart nitido sin borronear
 SetPixelated(bool pixelated)
+Habilita o deshabilita el filtro bilineal del canvas, permitiendo pixelart nitido sin borronear
 
 SetFont(string font)
 Determina la fuente de los DrawText de ahora en más.
@@ -116,8 +116,8 @@ var ctxset = false;
 var time = 0;
 var elapsed_time = 1/60;
 
-var screenWidth = 800;
-var screenHeight = 600;
+var screenWidth = 0;
+var screenHeight = 0;
 var mouse_button = false;
 var mouse_buttonPressed = false;
 var mouse_x = 0;
@@ -221,7 +221,9 @@ function DrawImage(image, x, y, w, h, ox, oy, angleInRadians)
 {
 	ctx.translate(x, y);
 	ctx.rotate(angleInRadians);
+	ctx.scale(Math.sign(w), Math.sign(h))
 	ctx.drawImage(image, ox, oy, w, h);
+	ctx.scale(Math.sign(w), Math.sign(h))
 	ctx.rotate(-angleInRadians);
 	ctx.translate(-x, -y);
 }
@@ -238,7 +240,9 @@ function DrawImage(image, x, y, w, h, ox, oy, angleInRadians)
 function DrawImageSimple(image, x, y, w, h)
 {
 	ctx.translate(x, y);
+	ctx.scale(Math.sign(w), Math.sign(h))
 	ctx.drawImage(image, 0, 0, w, h);
+	ctx.scale(Math.sign(w), Math.sign(h))
 	ctx.translate(-x, -y);
 }
 
@@ -258,7 +262,9 @@ function DrawImageSimple(image, x, y, w, h)
 function DrawSubImageSimple(image, x, y, w, h, sx, sy, sw, sh)
 {
 	ctx.translate(x, y);
+	ctx.scale(Math.sign(w), Math.sign(h));
 	ctx.drawImage(image, sx+0.01, sy+0.01, sw-0.02, sh-0.02, 0, 0, w, h);
+	ctx.scale(Math.sign(w), Math.sign(h));
 	ctx.translate(-x, -y);
 }
 
@@ -279,7 +285,9 @@ function DrawSubImage(image, x, y, w, h, sx, sy, sw, sh, ox, oy, angleInRadians)
 {
 	ctx.translate(x, y);
 	ctx.rotate(angleInRadians);
+	ctx.scale(Math.sign(w), Math.sign(h));
 	ctx.drawImage(image, sx+0.01, sy+0.01, sw-0.02, sh-0.02, ox, oy, w, h);
+	ctx.scale(Math.sign(w), Math.sign(h));
 	ctx.rotate(-angleInRadians);
 	ctx.translate(-x, -y);
 }
@@ -309,7 +317,7 @@ function DrawText(text, x, y, r, g, b, a) {
         ctx.lineWidth = 3;
         ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
         ctx.fillText(text, x, y);
-    }
+}
 }
 
 /**

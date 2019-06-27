@@ -17,15 +17,13 @@ class Player{
         this.moveZ = 20000;
         this.fricFloor = 100;
         this.jumpForce = -200000;
-        this.g = 980;
+        this.g = gravity;
         this.ground = false;
         this.crouch = false;
     }
 
     update(){
-        // resetea aceleracion en y
-        this.ay = 0
-        this.az = 0
+        
 
         // comprueba salto
         if (GetKeyDown(KEY_SPACE)){
@@ -34,7 +32,6 @@ class Player{
             }
         }
 
-        // comprueba agachado
         if (GetKey(KEY_C)){
             this.crouch = true
         }else{
@@ -83,13 +80,17 @@ class Player{
         this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
         // Collision
-        this.collisionCubos()
+        //this.collisionCubos()
 
         // Collision floor
         this.collisionFloor()
 
         // Collision Walls
         this.collisionWalls()
+
+        // resetea aceleracion en y
+        this.ay = 0
+        this.az = 0
 
         //console.log(`x: ${this.x}, y: ${this.y}, z: ${this.z}`)
     }
