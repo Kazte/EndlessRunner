@@ -20,10 +20,11 @@ var time = 0;
 
 var par = 5
 
+var frame
+
 var highScore = 0
 var score = 0
 
-var imgPlayer = new Image()
 var imgGameOver = new Image()
 var imgPixel = new Image()
 var imgBG = new Image()
@@ -52,7 +53,7 @@ function Start() {
     generador = new Generador()
     listDraw.push(player)
 
-    imgPlayer.src = "img/player.jpg"
+    
     imgGameOver.src = "img/gameover.png"
     imgPixel.src = "img/pixel.png"
     imgBG.src = "img/fondo.png"
@@ -62,7 +63,7 @@ function Start() {
 
 
 function Update() {
-
+    
     if (!pause) {
         player.update();
         generador.update();

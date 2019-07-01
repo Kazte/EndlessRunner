@@ -20,11 +20,14 @@ class Player{
         this.g = gravity;
         this.ground = false;
         this.crouch = false;
+
+        this.imgPlayer = new Image()
+        this.imgPlayer.src = "img/player/running/SignatRun.png"
+        this.playerSpriteSheet = new SpriteSheet(this.imgPlayer, 6, 1, 16, 32, 16, 32, 0, 0)
+
     }
 
     update(){
-        
-
         // comprueba salto
         if (GetKeyDown(KEY_SPACE)){
             if (this.ground){
@@ -104,12 +107,19 @@ class Player{
 
     releaseJump(){
         if (this.vy < -6){
-        this.vy = -2
+            this.vy = -2
         }
     }
 
     draw(){
-        DrawImage(imgPlayer, this.x - camara.x, this.y + this.z - camara.y, this.w, this.h, 0, 0, this.angle)
+        // DrawImage(this.imgPlayer, this.x - camara.x, this.y + this.z - camara.y, this.w, this.h, 0, 0, this.angle)
+        if (this.vx < 300){
+            frame = Math.floor((this.vx * .1) % 6)  
+        }else{
+            frame = Math.floor((this.vx * 10) % 6)  
+        }
+        this.playerSpriteSheet.DrawFrameSimple(frame, this.x - camara.x, this.y + this.z - camara.y, 16, 32)
+        // console.log(frame, this.vx, this.ax)
     }
 
     collisionFloor(){
