@@ -3,7 +3,7 @@ class Parallax {
     constructor() {
         this.canGenerateFloor = true;
         this.canGenerateBg = true;
-        this.firstFloor();
+        this.first();
     }
 
     update() {
@@ -24,8 +24,8 @@ class Parallax {
                 this.canGenerateBg = true
                 listBG.shift()
             }
-            if ((listBG[i].x - camara.x) * par  + listBG[0].w < 800 && this.canGenerateBg) {
-                listBG.push(new BG((listBG[i].x - camara.x + listBG[0].w) * par + camara.x, 0, 1600, 995))
+            if ((listBG[i].x - camara.x) / par  + listBG[0].w < 800 && this.canGenerateBg) {
+                listBG.push(new BG((listBG[0].x - camara.x + listBG[0].w) * par + camara.x, 0, 1600, 995))
                 this.canGenerateBg = false
             }
         }
@@ -44,7 +44,7 @@ class Parallax {
         })
     }
 
-    firstFloor() {
+    first() {
         listFloor.push(new Floor(0, 332, 1600, 111))
         listBG.push(new BG(0, 0, 1600, 995))
     }

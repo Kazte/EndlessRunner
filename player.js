@@ -4,7 +4,7 @@ class Player{
         this.y = _y;
         this.z = 16;
         this.w = 16;
-        this.d = 10
+        this.d = 10;
         this.h = 32;
         this.m = 9;
         this.vx = 0;
@@ -14,7 +14,7 @@ class Player{
         this.ay = 0;
         this.az = 0;
         this.angle = 0;
-        this.moveZ = 20000;
+        this.forceZ = 20000;
         this.fricFloor = 100;
         this.jumpForce = -200000;
         this.g = gravity;
@@ -43,14 +43,15 @@ class Player{
 
         if (this.ground && !this.crouch) {
             if (GetKey(KEY_ARROW_DOWN)) {
-                this.az += this.moveZ / this.m
+                this.az += this.forceZ / this.m
             }
             if (GetKey(KEY_ARROW_UP)) {
-                this.az += -this.moveZ / this.m
+                this.az += -this.forceZ / this.m
             }
         }
 
         this.fricForce = -this.fricFloor * (this.m * 9.8) * Math.sign(this.vz) * Math.min(1, Math.abs(this.vz / this.fricFloor * 2))
+        
         this.az += this.fricForce / this.m
 
         // se agacha
@@ -70,6 +71,7 @@ class Player{
         }else{
             this.ax = 1.2
         }
+
         this.ay += this.g
 
         // Velocity
@@ -83,7 +85,7 @@ class Player{
         this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
         // Collision
-        //this.collisionCubos()
+        // this.collisionCubos()
 
         // Collision floor
         this.collisionFloor()
@@ -94,20 +96,12 @@ class Player{
         // resetea aceleracion en y
         this.ay = 0
         this.az = 0
-
-        //console.log(`x: ${this.x}, y: ${this.y}, z: ${this.z}`)
     }
 
     jump(){
         if (this.ground){
             this.ay += this.jumpForce / this.m
             this.ground = false
-        }
-    }
-
-    releaseJump(){
-        if (this.vy < -6){
-            this.vy = -2
         }
     }
 
@@ -137,7 +131,7 @@ class Player{
         if (this.z >= 32 || this.z - this.d <= 0) {
             this.az = 0
             this.vz = 0
-            this.z = this.z >= 32? 32 : this.d
+            this.z = this.z >= 32 ? 32 : this.d
         }
     }
 
@@ -156,8 +150,7 @@ class Player{
             var colz1 = (this.z + this.d) > listCubes[i].z
             var colz2 = this.z < (listCubes[i].z + listCubes[i].d)
             var colz = colz1 && colz2
-
-            //console.log(`${colx} && ${coly} && ${colz}`)
+            
 
             if(colx && coly && colz){
                 isGameOver = true

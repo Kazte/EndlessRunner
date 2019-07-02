@@ -17,7 +17,7 @@ class Wheel{
 		this.inercia = 1/2 * this.m * (this.r * this.r)
 		this.t = -10000;
 		this.angle = 0;
-		this.vangle = -50
+		this.vangle = -50;
 		this.aangle = 0;
 		this.ground = false;
 	}
@@ -27,7 +27,8 @@ class Wheel{
 
 		if (this.ground){
         	// this.aangle = this.t / this.inercia
-        	// this.t = 0
+			// this.t = 0
+			
         	var vp = this.r * this.vangle - this.vx // Velocidad del punto respecto al piso
         	
             this.ax += 50 * vp / this.m
@@ -50,7 +51,7 @@ class Wheel{
 
 
 		
-
+		// MCU
 		this.vangle += this.aangle * elapsed_time
 
 		this.angle += this.vangle * elapsed_time + 1/2 * this.aangle * (elapsed_time * elapsed_time)
@@ -67,10 +68,16 @@ class Wheel{
 		for (var i = 0; i < listFloor.length; i++){
             if ((this.y + this.h) > listFloor[i].y){
                  this.y = listFloor[i].y - this.h
+				 
+				 // REBOTE
 				 this.vy *= -0.4
+
+				 
 				 if (this.vy < 0 && this.vy > -2){
 					 this.vy = 0
 				 }
+
+
                  this.ground = true;
             }else{
             	this.ground = false;
