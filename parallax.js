@@ -25,7 +25,7 @@ class Parallax {
                 listBG.shift()
             }
             if ((listBG[i].x - camara.x) / par  + listBG[0].w < 800 && this.canGenerateBg) {
-                listBG.push(new BG((listBG[0].x - camara.x + listBG[0].w) * par + camara.x, 0, 1600, 995))
+                listBG.push(new BG(listBG[0].x - camara.x + listBG[0].w * par + camara.x, 0, 1600, 995))
                 this.canGenerateBg = false
             }
         }
