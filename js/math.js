@@ -49,8 +49,7 @@ Vector2.prototype.Clone = function () {
  * @param {float} y - componente y
  */
 
-Vector2.prototype.Set = function (x,y) 
-{
+Vector2.prototype.Set = function (x, y) {
     this.x = x;
     this.y = y;
 };
@@ -236,7 +235,7 @@ function cross_vec(a, b) {
  * @param {float} c - componente a21
  * @param {float} d - componente a22
  */
-function Matrix2(a, b,c,d) {
+function Matrix2(a, b, c, d) {
     this.m00 = a;
     this.m01 = b;
     this.m10 = c;
@@ -272,7 +271,7 @@ Matrix2.prototype.Rotation = function (angle) {
     this.m11 = c;
     return this;
 };
-	
+
 
 /**
  * Matriz Transpuesta
@@ -292,7 +291,7 @@ Matrix2.prototype.Transpose = function () {
 Matrix2.prototype.multiplyVec = function (rhs) {
     return new Vector2(this.m00 * rhs.x + this.m01 * rhs.y, this.m10 * rhs.x + this.m11 * rhs.y);
 };
- 
+
 /**
  * Multiplicacion por una matriz. 
  * @method multiplyMat
@@ -301,11 +300,11 @@ Matrix2.prototype.multiplyVec = function (rhs) {
  */
 Matrix2.prototype.multiplyMat = function (rhs) {
     return new Matrix2(
-		this.m00 * rhs.m00 + this.m01 * rhs.m10,
-		this.m00 * rhs.m01 + this.m01 * rhs.m11,
-		this.m10 * rhs.m00 + this.m11 * rhs.m10,
-		this.m10 * rhs.m01 + this.m11 * rhs.m11
-		);
+        this.m00 * rhs.m00 + this.m01 * rhs.m10,
+        this.m00 * rhs.m01 + this.m01 * rhs.m11,
+        this.m10 * rhs.m00 + this.m11 * rhs.m10,
+        this.m10 * rhs.m01 + this.m11 * rhs.m11
+    );
 };
 
 
@@ -329,9 +328,8 @@ function vec2_transform(m, v) {
  * @return {float} número aleatorio entre x0 y x1
  */
 // numero aleatorio
-function Random(x0 , x1)
-{
-    return Math.random() * (x1-x0) + x0;
+function Random(x0, x1) {
+    return Math.random() * (x1 - x0) + x0;
 }
 
 /**
@@ -340,8 +338,7 @@ function Random(x0 , x1)
  * @param {array} array
  * @return {float} Devuelve un numero aleatorio entre todos los del array
  */
-function Random_Choose(array) 
-{
+function Random_Choose(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
@@ -367,8 +364,7 @@ function getRandomColor() {
 // basic math:
 // See : http://www.oocities.org/pcgpe/math2d.html
 
-function convexHull(vertices, count , vertices_out)
-{
+function convexHull(vertices, count, vertices_out) {
     // si tiene menos de 3 vertices, no hay poligono
     if (count < 3)
         return;
@@ -425,8 +421,7 @@ function convexHull(vertices, count , vertices_out)
         indexHull = nextHullIndex;
 
         // Conclude algorithm upon wrap-around
-        if (nextHullIndex == index_x_max)
-        {
+        if (nextHullIndex == index_x_max) {
             m_vertexCount = outCount;
             break;
         }
@@ -450,18 +445,18 @@ function fmod(x, y) {
     //   returns 1: 0.5
 
     var tmp, tmp2, p = 0,
-      pY = 0,
-      l = 0.0,
-      l2 = 0.0;
+        pY = 0,
+        l = 0.0,
+        l2 = 0.0;
 
     tmp = x.toExponential()
-      .match(/^.\.?(.*)e(.+)$/);
+        .match(/^.\.?(.*)e(.+)$/);
     p = parseInt(tmp[2], 10) - (tmp[1] + '')
-      .length;
+        .length;
     tmp = y.toExponential()
-      .match(/^.\.?(.*)e(.+)$/);
+        .match(/^.\.?(.*)e(.+)$/);
     pY = parseInt(tmp[2], 10) - (tmp[1] + '')
-      .length;
+        .length;
 
     if (pY > p) {
         p = pY;
@@ -475,7 +470,7 @@ function fmod(x, y) {
         l2 = Math.pow(10, l);
 
         return (tmp2 / l2)
-          .toFixed(l - p) * l2;
+            .toFixed(l - p) * l2;
     } else {
         return parseFloat(tmp2.toFixed(-p));
     }
@@ -484,7 +479,7 @@ function fmod(x, y) {
 
 
 
-function Matrix3(a0,a1,a2,a3,a4,a5,a6,a7,a8) {
+function Matrix3(a0, a1, a2, a3, a4, a5, a6, a7, a8) {
     this.m11 = a0;
     this.m12 = a1;
     this.m13 = a2;
@@ -496,10 +491,10 @@ function Matrix3(a0,a1,a2,a3,a4,a5,a6,a7,a8) {
     this.m33 = a8;
 };
 
-function mul_Matrix3(A,B) {
+function mul_Matrix3(A, B) {
     return new Matrix3(
-		A.m11 * B.m11 + A.m12 * B.m21 + A.m13 * B.m31,	A.m11 * B.m12 + A.m12 * B.m22 + A.m13 * B.m32, A.m11 * B.m13 + A.m12 * B.m23 + A.m13 * B.m33,
-		A.m21 * B.m11 + A.m22 * B.m21 + A.m23 * B.m31,	A.m21 * B.m12 + A.m22 * B.m22 + A.m23 * B.m32, A.m21 * B.m13 + A.m22 * B.m23 + A.m23 * B.m33,
-		A.m31 * B.m11 + A.m32 * B.m21 + A.m33 * B.m31,	A.m31 * B.m12 + A.m32 * B.m22 + A.m33 * B.m32, A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33
-		);
+        A.m11 * B.m11 + A.m12 * B.m21 + A.m13 * B.m31, A.m11 * B.m12 + A.m12 * B.m22 + A.m13 * B.m32, A.m11 * B.m13 + A.m12 * B.m23 + A.m13 * B.m33,
+        A.m21 * B.m11 + A.m22 * B.m21 + A.m23 * B.m31, A.m21 * B.m12 + A.m22 * B.m22 + A.m23 * B.m32, A.m21 * B.m13 + A.m22 * B.m23 + A.m23 * B.m33,
+        A.m31 * B.m11 + A.m32 * B.m21 + A.m33 * B.m31, A.m31 * B.m12 + A.m32 * B.m22 + A.m33 * B.m32, A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33
+    );
 }; 

@@ -1,5 +1,5 @@
 class Wheel {
-    constructor(_x, _y, _z, _w, _h, _r) {
+    constructor(_x, _y, _z) {
         this.x = _x;
         this.y = _y;
         this.z = _z;
@@ -10,31 +10,35 @@ class Wheel {
         this.ay = 0;
         this.az = 0;
         this.g = gravity;
-        this.w = _w;
-        this.h = _h;
-        this.r = _r;
+        this.w = 32;
+        this.h = 32;
+        this.d = 65
+        this.r = 16;
         this.m = 9
         this.inercia = 1 / 2 * this.m * (this.r * this.r)
-        this.t = -10000;
+        this.t = -100000;
         this.angle = 0;
-        this.vangle = -50;
+        this.vangle = 0;
         this.aangle = 0;
         this.ground = false;
+        this.frame = 0
+        this.lastangle = 0
+
+        this.imgWheel = new Image()
+        this.imgWheel.src = "img/Barrel.png"
+        this.wheelSpriteSheet = new SpriteSheet(this.imgWheel, 3, 2, 32, 64, 32, 64, 0, 0)
     }
 
     update() {
 
+
         if (this.ground) {
             this.aangle = this.t / this.inercia
-            this.t = 0
 
             var vp = this.r * this.vangle - this.vx // Velocidad del punto
 
             this.ax += 5 * vp / this.m
-        } else {
-            this.aangle = 0
         }
-
 
         this.ay += this.g
 
@@ -55,9 +59,13 @@ class Wheel {
 
         this.collisionFloor()
 
+        var calc = Math.floor(((-this.angle * 0.3) % 6))
+        this.frame = calc
+
         this.ay = 0
         this.ax = 0
         this.az = 0
+
         this.aangle = 0
     }
 
@@ -81,6 +89,12 @@ class Wheel {
     }
 
     draw() {
-        DrawImage(imgWheel, this.x - camara.x, this.y + this.z - camara.y, this.w, this.h, -16, -16, this.angle)
+        //#region TEST RUEDA
+        // var img = new Image()
+        // img.src = "img/wheel.png"
+        // DrawImage(img, this.x - camara.x, this.y + this.z - camara.y, 64, 64, -32, -32, this.angle)
+        //#endregion
+
+        this.wheelSpriteSheet.DrawFrameSimple(this.frame, this.x - camara.x, this.y + this.z + 32 - camara.y, 32, 64)
     }
 }

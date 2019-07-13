@@ -1,15 +1,15 @@
-class GameOver{
+class GameOver {
 
-    constructor(_x, _y){
-       this.x = _x;
-       this.y = _y;
-       this.w = 550;
-       this.h = 124;
-       this.angle = 0;
+    constructor(_x, _y) {
+        this.x = _x;
+        this.y = _y;
+        this.w = 550;
+        this.h = 124;
+        this.angle = 0;
     }
 
     update() {
-        	
+
     }
 
     draw() {

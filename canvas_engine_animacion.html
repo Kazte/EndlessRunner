@@ -44,7 +44,6 @@ function Start()
 function Update()
 {
 	frame = Math.floor(time*4)%8
-	console.log(frame)
 }
 
 function Render()
@@ -53,11 +52,11 @@ function Render()
 
 	// //-------------------------------------------------------------
 
-	// // Funciones DrawSubImageSimple y DrawSubImage
-	// // Simple: posicion y escala
-	// DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2-75-64, 128, 128, 0, 0, 16, 16)
-	// // No Simple: añade rotacion
-	// DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2-75, 128, 128, 0, 0, 16, 16, -64, -64, -time)
+	// Funciones DrawSubImageSimple y DrawSubImage
+	// Simple: posicion y escala
+	DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2-75-64, 128, 128, 0, 0, 16, 16)
+	// No Simple: añade rotacion
+	DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2-75, 128, 128, 0, 0, 16, 16, -64, -64, -time)
 
 	//-------------------------------------------------------------
 
@@ -69,9 +68,9 @@ function Render()
 	// Dibujo la subimagen que esta en esa fila y columna, multiplicados por los 16 pixels de ancho y alto de cada imagen
 	// Tener en cuenta que la posicion y el tamaño de la subimagen es respecto a la imagen original, sin tener en cuenta la escala con la que luego se dibuja
 	// Simple: posicion y escala
-	// DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2+75-64, 128, 128, framex*16, framey*16, 16, 16)
-	// // No Simple: añade rotacion
-	// DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2+75, 128, 128, framex*16, framey*16, 16, 16, -64, -64, -time)
+	DrawSubImageSimple(playerImage, screenWidth/2-64, screenHeight/2+75-64, 128, 128, framex*16, framey*16, 16, 16)
+	// No Simple: añade rotacion
+	DrawSubImage(playerImage, screenWidth/2+256, screenHeight/2+75, 128, 128, framex*16, framey*16, 16, 16, -64, -64, -time)
 
 	//-------------------------------------------------------------
 

@@ -12,13 +12,14 @@ var KEY_ARROW_LEFT = 37
 var KEY_ARROW_RIGHT = 39
 var KEY_SPACE = 32
 var KEY_C = 67
+var KEY_PAUSE = 27
 
 var pause = false
 var isGameOver = false
 var gravity = 980
 var time = 0;
 
-var par = 5
+var par = 10
 
 var frame
 
@@ -29,7 +30,6 @@ var imgGameOver = new Image()
 var imgPixel = new Image()
 var imgBG = new Image()
 var imgFloor = new Image()
-var imgWheel = new Image();
 
 // Dificultad del juego
 var speed = -150
@@ -53,46 +53,40 @@ function Start() {
     generador = new Generador()
     listDraw.push(player)
 
-    
+
     imgGameOver.src = "img/gameover.png"
     imgPixel.src = "img/pixel.png"
     imgBG.src = "img/fondo.png"
     imgFloor.src = "img/piso.png"
-	imgWheel.src = "img/wheel.png"
 }
 
 
 function Update() {
-    
+
     if (!pause) {
         player.update();
         generador.update();
         parallax.update();
+
         listCubes.forEach(cube => {
             if (cube.x - camara.x + cube.w < 0) {
                 listCubes.shift()
-                score += 10 + time * .5
+                score += 10 + time * 0.5
             }
             cube.update()
         });
+
         time += elapsed_time
         difficultyControl()
     }
 
-    gameOver.update()
-
     if (isGameOver) {
-        gameOver.update()
         pause = true
         if (IsKeyPressed(KEY_R)) {
             location.reload()
         }
     }
-    // Highscore and score
-
     camara.update()
-    //console.log(camara.x, camara.y);
-
 }
 
 function ordenarZ(array) {
@@ -114,19 +108,16 @@ function ordenarZ(array) {
     return [].concat(ordenarZ(left), pivot, ordenarZ(right))
 }
 
-function removeItemFromArr(arr, item) {
-    return arr.filter(e => e !== item)
-}
-
-// todo: Pelota q cae y rebota
-
+// function removeItemFromArr(arr, item) {
+//     return arr.filter(e => e !== item)
+// }
 
 function Render() {
     //Clean BG
     parallax.drawBG()
     parallax.drawFloor()
 
-	// Ordenamiento de z para dibujar
+    // Ordenamiento de z para dibujar
     listDraw = ordenarZ(listDraw)
     for (let i = 0; i < listDraw.length; i++) {
         if (listDraw[i].x + listDraw[i].w < 0) {
@@ -150,7 +141,7 @@ function Render() {
 }
 
 function difficultyControl() {
-    score += elapsed_time  * (player.vx * 0.05)
+    score += elapsed_time * (player.vx * 0.05)
 
     if (time % 25 <= 0.017 && generador.maxTime >= 1) {
         generador.maxTime -= 0.5
