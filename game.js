@@ -69,11 +69,11 @@ function Update() {
         parallax.update();
 
         listCubes.forEach(cube => {
+            cube.update()
             if (cube.x - camara.x + cube.w < 0) {
                 listCubes.shift()
                 score += 10 + time * 0.5
             }
-            cube.update()
         });
 
         time += elapsed_time

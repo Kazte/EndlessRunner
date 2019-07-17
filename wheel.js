@@ -15,7 +15,11 @@ class Wheel {
         this.d = 65
         this.r = 16;
         this.m = 9
+
+
         this.inercia = 1 / 2 * this.m * (this.r * this.r)
+
+
         this.t = -100000;
         this.angle = 0;
         this.vangle = 0;
@@ -23,22 +27,15 @@ class Wheel {
         this.ground = false;
         this.frame = 0
         this.lastangle = 0
-
+        
         this.imgWheel = new Image()
         this.imgWheel.src = "img/Barrel.png"
         this.wheelSpriteSheet = new SpriteSheet(this.imgWheel, 3, 2, 32, 64, 32, 64, 0, 0)
     }
-
+    
     update() {
-
-
-        if (this.ground) {
-            this.aangle = this.t / this.inercia
-
-            var vp = this.r * this.vangle - this.vx // Velocidad del punto
-
-            this.ax += 5 * vp / this.m
-        }
+        
+        this.collisionFloor()
 
         this.ay += this.g
 
@@ -52,12 +49,11 @@ class Wheel {
         this.y += this.vy * elapsed_time + 1 / 2 * this.ay * (elapsed_time * elapsed_time)
         this.z += this.vz * elapsed_time + 1 / 2 * this.az * (elapsed_time * elapsed_time)
 
-        // MCU
+        // Movimiento Rotacional
         this.vangle += this.aangle * elapsed_time
 
         this.angle += this.vangle * elapsed_time + 1 / 2 * this.aangle * (elapsed_time * elapsed_time)
 
-        this.collisionFloor()
 
         var calc = Math.floor(((-this.angle * 0.3) % 6))
         this.frame = calc
@@ -80,7 +76,22 @@ class Wheel {
                 if (this.vy < 0 && this.vy > -2) {
                     this.vy = 0
                 }
+                
+                // Aplicamos un torque mientras el barril está en el piso
+                this.aangle = this.t / this.inercia
 
+                // Obtenemos la velocidad del punto (Velocidad tangencial)
+
+
+                var vp = this.r * this.vangle
+                
+                // Ajustamos la aceleración respecto de la velocidad del punto
+
+
+                this.ax += (5 * vp) / this.m
+
+
+                
                 this.ground = true;
             } else {
                 this.ground = false;
