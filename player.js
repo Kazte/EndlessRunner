@@ -51,7 +51,10 @@ class Player {
             }
         }
 
-        this.fricForce = -this.fricFloor * (this.m * 9.8) * Math.sign(this.vz) * Math.min(1, Math.abs(this.vz / this.fricFloor * 2))
+        this.fricForce = -this.fricFloor * 
+                            (this.m * 9.8) * 
+                            Math.sign(this.vz) * 
+                            Math.min(1, Math.abs(this.vz / this.fricFloor * 2));
 
         this.az += this.fricForce / this.m
 
@@ -67,6 +70,7 @@ class Player {
         }
 
         // MRUV
+
         // Acc
         if (this.vx < 300) {
             this.ax += 0.2

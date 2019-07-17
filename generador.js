@@ -14,7 +14,7 @@ class Generador {
     }
 
     generateCube() {
-        var rand = Random_Choose([/*0, 1, 2, */3])
+        var rand = Random_Choose([0, 1, 2, 3])
 
         switch (rand) {
             case 0:
